@@ -1,0 +1,20 @@
+services:
+  # A web service
+  - type: web
+    name: apollo-scraper
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: RENDER
+        value: "True"
+      - key: APOLLO_API_KEY
+        sync: false  # This will prompt for the value during deployment
+      - key: OPENAI_API_KEY
+        sync: false  # This will prompt for the value during deployment
+    autoDeploy: true
+    # Uncomment the following lines if you want to use persistent disk storage
+    # disk:
+    #   name: data
+    #   mountPath: /data
+    #   sizeGB: 1

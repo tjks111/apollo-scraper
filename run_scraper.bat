@@ -1,0 +1,6 @@
+@echo off
+echo Starting Apollo Scraper...
+python run_scraper.py
+echo.
+echo Press any key to exit...
+pause > nul

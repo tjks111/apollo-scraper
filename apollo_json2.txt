@@ -1,0 +1,20 @@
+{
+  "page": 1,
+  "person_locations": [
+    "United States"
+  ],
+  "organization_locations": [
+    "United States"
+  ],
+  "organization_industry_tag_ids": [
+    "5567cdb77369645401080000"
+  ],
+  "person_department_or_subdepartments": [
+    "executive",
+    "founder"
+  ],
+  "prospected_by_current_team": [
+    "yes"
+  ],
+  "per_page": 100
+}

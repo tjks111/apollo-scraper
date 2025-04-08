@@ -1,0 +1,54 @@
+{
+  "organization_num_employees_ranges": [
+    "1,10",
+    "11,20"
+  ],
+  "organization_locations": [
+    "United_Kingdom"
+  ],
+  "person_locations": [
+    "United_Kingdom"
+  ],
+  "q_organization_keyword_tags": [
+    "tech",
+    "saas",
+    "adtech",
+    "fintech",
+    "api",
+    "data",
+    "b2b",
+    "software",
+    "application",
+    "app",
+    "android",
+    "internet",
+    "dev",
+    "website",
+    "plugin",
+    "web",
+    "ios",
+    "artificial",
+    "ai",
+    "analytics"
+  ],
+  "included_organization_keyword_fields": [
+    "tags",
+    "name"
+  ],
+  "person_seniorities": [
+    "founder"
+  ],
+  "organization_not_industry_tag_ids": [
+    "5567e09973696410db020800",
+    "5567cd467369644d39040000",
+    "5567cdbc73696439d90b0000"
+  ],
+  "organization_founded_year_range": {
+    "min": "2019"
+  },
+  "organization_include_unknown_founded_year": "yes",
+  "page": "1",
+  "prospected_by_current_team": [
+    "no"
+  ]
+}

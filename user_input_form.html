@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo Scrape - User Inputs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        #status-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .status-box {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .status-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status-message {
+            margin-bottom: 10px;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .step {
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .step.pending {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        .step.running {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        .step.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .step.failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .result-box {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .download-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+            color: white;
+        }
+        .progress-container {
+            margin: 20px 0;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            height: 20px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #007bff;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Apollo Scrape - User Inputs</h1>
+        <form id="userInputForm">
+            <div class="form-group">
+                <label for="apollo_url">Apollo URL:</label>
+                <input type="url" id="apollo_url" name="apollo_url" placeholder="https://app.apollo.io/..." required>
+                <div class="error" id="apollo_url_error">Please enter a valid Apollo URL</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="scrape_name">Scrape Name:</label>
+                <input type="text" id="scrape_name" name="scrape_name" placeholder="Enter a name for this scrape" required>
+                <div class="error" id="scrape_name_error">Please enter a scrape name</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="user_name">Your Name:</label>
+                <input type="text" id="user_name" name="user_name" placeholder="Enter your name" required>
+                <div class="error" id="user_name_error">Please enter your name</div>
+            </div>
+            
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    
+    <div id="status-container" class="container">
+        <h2>Scraper Status</h2>
+        <div class="status-box">
+            <div class="status-title">Status: <span id="scraper-status">Initializing...</span></div>
+            <div id="loader" class="loader"></div>
+            <div class="status-message" id="status-message">Starting scraper...</div>
+            
+            <div class="progress-container">
+                <p>Processing...</p>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div id="result-container" class="result-box" style="display: none;">
+                <h3>Scraper Results</h3>
+                <div id="result-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variable to track polling interval
+        let statusPollInterval = null;
+        
+        // Variable to track progress animation
+        let progressValue = 0;
+        let progressInterval = null;
+        
+        // Function to animate the progress bar
+        function startProgressAnimation() {
+            // Reset progress
+            progressValue = 0;
+            document.getElementById('progress-bar').style.width = '0%';
+            
+            // Animate progress to 90% (save the last 10% for completion)
+            progressInterval = setInterval(() => {
+                if (progressValue < 90) {
+                    progressValue += 0.5;
+                    document.getElementById('progress-bar').style.width = `${progressValue}%`;
+                } else {
+                    clearInterval(progressInterval);
+                }
+            }, 500);
+        }
+        
+        // Function to update the UI based on scraper status
+        function updateScraperStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    const running = data.running;
+                    const lastRun = data.last_run;
+                    
+                    if (running) {
+                        // Scraper is still running
+                        document.getElementById('scraper-status').textContent = 'Running';
+                        document.getElementById('loader').style.display = 'block';
+                        document.getElementById('status-message').textContent = 'Scraper is running...';
+                        
+                        // Make sure progress animation is running
+                        if (!progressInterval) {
+                            startProgressAnimation();
+                        }
+                    } else if (lastRun) {
+                        // Scraper has completed
+                        clearInterval(statusPollInterval);
+                        clearInterval(progressInterval);
+                        document.getElementById('loader').style.display = 'none';
+                        
+                        if (lastRun.success) {
+                            // Complete the progress bar
+                            document.getElementById('progress-bar').style.width = '100%';
+                            
+                            document.getElementById('scraper-status').textContent = 'Completed';
+                            document.getElementById('status-message').textContent = 
+                                `Scraper completed successfully in ${lastRun.runtime_formatted}`;
+                            
+                            // Show results
+                            const resultContainer = document.getElementById('result-container');
+                            resultContainer.style.display = 'block';
+                            
+                            const resultContent = document.getElementById('result-content');
+                            if (lastRun.output_file.exists) {
+                                resultContent.innerHTML = `
+                                    <p><strong>Output File:</strong> ${lastRun.output_file.name}</p>
+                                    <p><strong>File Size:</strong> ${lastRun.output_file.size_mb} MB</p>
+                                    <p style="margin-top: 15px;">
+                                        <a href="/download/${lastRun.output_file.name}" 
+                                           class="download-button" 
+                                           download="${lastRun.output_file.name}">
+                                            Download CSV File
+                                        </a>
+                                    </p>
+                                `;
+                            } else {
+                                resultContent.innerHTML = `
+                                    <p>Warning: Expected output file ${lastRun.output_file.name} not found.</p>
+                                `;
+                            }
+                        } else {
+                            // Show error in progress bar
+                            document.getElementById('progress-bar').style.width = '100%';
+                            document.getElementById('progress-bar').style.backgroundColor = '#dc3545';
+                            
+                            document.getElementById('scraper-status').textContent = 'Failed';
+                            document.getElementById('status-message').textContent = 
+                                `Scraper failed at step ${lastRun.step}: ${lastRun.error}`;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking scraper status:', error);
+                });
+        }
+        
+        // Function to start polling for scraper status
+        function startStatusPolling() {
+            // Show the status container
+            document.getElementById('status-container').style.display = 'block';
+            
+            // Start progress animation
+            startProgressAnimation();
+            
+            // Initial status update
+            updateScraperStatus();
+            
+            // Start polling every 2 seconds
+            statusPollInterval = setInterval(updateScraperStatus, 2000);
+        }
+        
+        document.getElementById('userInputForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const apolloUrl = document.getElementById('apollo_url').value.trim();
+            const scrapeName = document.getElementById('scrape_name').value.trim();
+            const userName = document.getElementById('user_name').value.trim();
+            
+            // Validate inputs
+            let isValid = true;
+            
+            if (!apolloUrl) {
+                document.getElementById('apollo_url_error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('apollo_url_error').style.display = 'none';
+            }
+            
+            if (!scrapeName) {
+                document.getElementById('scrape_name_error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('scrape_name_error').style.display = 'none';
+            }
+            
+            if (!userName) {
+                document.getElementById('user_name_error').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('user_name_error').style.display = 'none';
+            }
+            
+            if (isValid) {
+                // Create User_Inputs object
+                const userInputs = {
+                    apollo_url: apolloUrl,
+                    scrape_name: scrapeName,
+                    user_name: userName
+                };
+                
+                // Send data to our Flask server
+                fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userInputs),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Start polling for scraper status
+                        if (data.scraper_running) {
+                            startStatusPolling();
+                        }
+                        
+                        // Show success message
+                        alert(data.message);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting the form. Please try again.');
+                });
+            }
+        });
+        
+        // Check if scraper is already running on page load
+        window.addEventListener('load', function() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.running) {
+                        startStatusPolling();
+                    } else if (data.last_run) {
+                        // Show previous results
+                        document.getElementById('status-container').style.display = 'block';
+                        updateScraperStatus();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking initial scraper status:', error);
+                });
+        });
+    </script>
+</body>
+</html>
