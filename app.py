@@ -132,7 +132,5 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     # In production, set debug to False
     is_prod = os.environ.get('RENDER', False)
-    # Only run the development server when running locally
-    if not is_prod:
-        app.run(host='0.0.0.0', debug=True, port=port)
-    # In production, Gunicorn will run the app
+    # Run the server with appropriate settings based on environment
+    app.run(host='0.0.0.0', debug=not is_prod, port=port)

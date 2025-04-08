@@ -44,7 +44,7 @@ Fill in the following details:
 3. **Region**: Choose the region closest to your users
 4. **Branch**: Select your main branch (usually "main" or "master")
 5. **Build Command**: `pip install -r requirements.txt`
-6. **Start Command**: `python app.py`
+6. **Start Command**: `gunicorn app:app --bind 0.0.0.0:$PORT`
 7. **Plan**: Choose the "Free" plan (or a paid plan if you need more resources)
 
 ## Step 5: Set Environment Variables
